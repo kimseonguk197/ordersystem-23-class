@@ -4,6 +4,7 @@ import com.beyond.ordersystem.member.domain.Member;
 import com.beyond.ordersystem.member.dtos.*;
 import com.beyond.ordersystem.member.repository.MemberRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,11 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -36,38 +34,39 @@ public class MemberService {
         this.passwordEncoder = passwordEncoder;
         this.s3Client = s3Client;
     }
-    public void save(MemberCreateDto dto, MultipartFile profileImage){
+    public Long save(MemberCreateDto dto){
         if(memberRepository.findByEmail(dto.getEmail()).isPresent()){
             throw new IllegalArgumentException("이미 존재하는 email입니다.");
         }
         Member member = dto.toEntity(passwordEncoder.encode(dto.getPassword()));
         memberRepository.save(member);
-
+        return member.getId();
     }
 
     @Transactional(readOnly = true)
-    public MemberDetailDto findById(Long id){
-        Optional<Member> optMember = memberRepository.findById(id);
-        Member member = optMember.orElseThrow(()-> new NoSuchElementException("entity is not found"));
-        MemberDetailDto dto = MemberDetailDto.fromEntity(member);
-        return dto;
-    }
-
-    @Transactional(readOnly = true)
-    public MemberDetailDto myinfo(){
-        String email = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-        Optional<Member> optMember = memberRepository.findByEmail(email);
-        Member member = optMember.orElseThrow(()-> new NoSuchElementException("entity is not found"));
-        MemberDetailDto dto = MemberDetailDto.fromEntity(member);
-        return dto;
-    }
-    @Transactional(readOnly = true)
-    public List<MemberListDto> findAll(){
-        return memberRepository.findAll().stream().map(a-> MemberListDto.fromEntity(a))
+    public List<MemberResDto> findAll(){
+        return memberRepository.findAll().stream().map(a-> MemberResDto.fromEntity(a))
                 .collect(Collectors.toList());
     }
 
-    public Member login(MemberLoginDto dto){
+
+    @Transactional(readOnly = true)
+    public MemberResDto findById(Long id){
+        Optional<Member> optMember = memberRepository.findById(id);
+        Member member = optMember.orElseThrow(()-> new EntityNotFoundException("entity is not found"));
+        MemberResDto dto = MemberResDto.fromEntity(member);
+        return dto;
+    }
+
+    @Transactional(readOnly = true)
+    public MemberResDto myinfo(String email){
+        Optional<Member> optMember = memberRepository.findByEmail(email);
+        Member member = optMember.orElseThrow(()-> new EntityNotFoundException("entity is not found"));
+        MemberResDto dto = MemberResDto.fromEntity(member);
+        return dto;
+    }
+
+    public Member login(MemberLoginReqDto dto){
         Optional<Member> opt_member = memberRepository.findByEmail(dto.getEmail());
         boolean check = true;
         if(!opt_member.isPresent()){

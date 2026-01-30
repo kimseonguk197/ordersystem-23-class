@@ -1,12 +1,8 @@
 package com.beyond.ordersystem.member.domain;
 
 import com.beyond.ordersystem.common.domain.BaseTimeEntity;
-import com.beyond.ordersystem.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor

@@ -21,7 +21,6 @@ public class JwtAuthenticationHandler implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-//        startline + header조립
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); //401 상태코드 세팅
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");

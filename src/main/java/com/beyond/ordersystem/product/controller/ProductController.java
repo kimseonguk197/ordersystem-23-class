@@ -1,6 +1,7 @@
 package com.beyond.ordersystem.product.controller;
 
 import com.beyond.ordersystem.product.dtos.ProductCreateDto;
+import com.beyond.ordersystem.product.dtos.ProductResDto;
 import com.beyond.ordersystem.product.dtos.ProductSearchDto;
 import com.beyond.ordersystem.product.service.ProductService;
 import org.springframework.data.domain.Page;
@@ -29,8 +30,7 @@ public class ProductController {
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> findAll(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-                                     @ModelAttribute ProductSearchDto searchDto){
+    public ResponseEntity<?> findAll(Pageable pageable, ProductSearchDto searchDto){
         Page<ProductResDto> productResDtoList = productService.findAll(pageable, searchDto);
         return ResponseEntity.status(HttpStatus.OK).body(productResDtoList);
 

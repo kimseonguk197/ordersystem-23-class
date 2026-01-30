@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.beyond'
 version = '0.0.1-SNAPSHOT'
-description = 'basic project for Spring Boot'
+description = 'ordersystem project for Spring Boot'
 
 java {
 	toolchain {

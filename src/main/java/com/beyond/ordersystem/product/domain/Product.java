@@ -11,7 +11,7 @@ import lombok.*;
 @ToString
 @Builder
 @Entity
-public class Product   extends BaseTimeEntity {
+public class Product extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,5 +23,9 @@ public class Product   extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", foreignKey = @ForeignKey(ConstraintMode.CONSTRAINT), nullable = false)
     private Member member;
+
+    public void updateProfileImageUrl(String url){
+        this.imagePath = url;
+    }
 
 }
